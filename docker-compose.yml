@@ -1,0 +1,42 @@
+version: "3.9"
+   
+services:
+
+  db:
+    image: postgres
+    container_name: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  
+  backend:
+    restart: always
+    container_name: backend
+    build: 
+      context: ./backend_birthday_remainder_app/
+      dockerfile: Dockerfile
+
+    command: python manage.py runserver 0.0.0.0:8000
+
+    volumes:
+      - .:/backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    restart: always
+    command : npm start
+    container_name: front
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+ 

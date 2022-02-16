@@ -1,0 +1,21 @@
+docker exec -it cotainername /bin/bash --> run the genuine commnad
+
+dumps(data) ==> This is used convert Python object to json string
+
+loads(data) => Convert Json to python object
+
+Serializars : convert complex data type to Python datatypes
+
+Deserializers : convert Python data to Complex datatypes
+
+
+Complex datatypes --(seriali..)--> Python native datatypes -(render)--> Json data
+
+JSONRenderer : used to render serializd data into JSON data
+
+Safe = False : can work with any serializer object
+
+JsonResponse(data(should be dict type), safe)
+
+If u use 'POST' method then define create() method in serializer class
+
