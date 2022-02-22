@@ -1,59 +1,95 @@
 from django.shortcuts import render
-from .models import remainderData
-from .serializer import remainderDataSerializer
-from rest_framework.renderers import JSONRenderer
+from django.contrib.auth.models import User,auth
 from django.http import HttpResponse
-from rest_framework.parsers import JSONParser
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view,authentication_classes,permission_classes
-from rest_framework.authentication import BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
-
-
 # Create your views here.
-@csrf_exempt
-# Allow this methods 
-# @api_view(['GET','POST','DELETE','PATCH','UPDATE'])
-# Authentication purpose
-# @authentication_classes([BasicAuthentication])
-# @permission_classes([IsAuthenticated])
-def remainder_details(request):
-    if request.method == 'GET':
-        # get the all model objects
-        remainder = remainderData.objects.all()
-        # Complex data to python data conversion
-        serializer = remainderDataSerializer(remainder,many=True)
-        # rendering python datatype to json data types
-        json_data = JSONRenderer().render(serializer.data)
-        # print(json_data)
-        return HttpResponse(json_data,content_type='application/json')
-    
-    elif request.method == 'POST':
-        python_data = JSONParser().parse(request)
-        serializer = remainderDataSerializer(data = python_data)
-        if serializer.is_valid():
-            serializer.save()
-            return HttpResponse("Data inserted successfully")
-        return HttpResponse("Failed to insert")
-        
-    elif request.method == 'PUT':
-        python_data = JSONParser().parse(request)
-        id = python_data.get('id')
-        remainder = remainderData.objects.get(id = id)
-        serializer = remainderDataSerializer(remainder,data=python_data,partial = True)
-        if serializer.is_valid():
-            serializer.save()
-            return HttpResponse("updation success !!")
-        return HttpResponse("Failed to update")
-    
-    elif request.method == 'DELETE':
-        python_data = JSONParser().parse(request)
-        id = python_data.get('user_id')
-        remainder = remainderData.objects.get(user_id = id)
-        remainder.delete()
-        return HttpResponse("Record Deleted success !!")
-        
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import IsAuthenticated
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
 
-        
+from rest_framework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
+
+@csrf_exempt 
+
+
+@permission_classes(IsAuthenticated)
+def DemoView(request):
+    if request.user.is_authenticated:
+        return HttpResponse(request)
     
-        
+    return HttpResponse("Not Register")
+    
+    
+    
+def logout(request):
+    auth.logout(request)
+    return HttpResponse("Logout")
+
+@csrf_exempt
+def user_login(request):
+    if request.method == 'POST':
+        python_data = JSONParser().parse(request)
+        username = python_data['username']
+        password = python_data['password']
+
+        user = auth.authenticate(username=username, password=password)
+        content_type = 'application/json'
+
+        if user is not None:
+            auth.login(request, user)
+            response = {
+                "id": user.id,
+                "isLogin": True,
+                "status": "Login Success"
+            }
+            json_data = JSONRenderer().render(response)
+            return HttpResponse(json_data, content_type=content_type)
+            # return redirect('/')
+
+        else:
+            response = {
+                "status": "Login Failed",
+                "isLogin": False
+            }
+            json_data = JSONRenderer().render(response)
+            return HttpResponse(json_data, content_type=content_type)
+
+
+def user_register(request):
+
+    if request.method == 'POST':
+        python_data = JSONParser().parse(request)
+        first_name = python_data['first_name']
+        email = python_data['email']
+        username = python_data['username']
+        password = python_data['password']
+        content_type = 'application/json'
+
+        if User.objects.filter(username=username).exists():
+            response = {
+                "status": "Username already taken !",
+                "isregistered": False
+            }
+            json_data = JSONRenderer().render(response)
+            return HttpResponse(json_data, content_type=content_type)
+        elif User.objects.filter(email=email).exists():
+            response = {
+                "status": "Email is already registered !",
+                "isregistered": False
+            }
+            json_data = JSONRenderer().render(response)
+            return HttpResponse(json_data, content_type=content_type)
+        else:
+            user = User.objects.create_user(
+                first_name=first_name, email=email, username=username, password=password)
+            user.save()
+            response = {
+                "status": "Registration successfull !",
+                "isRegistered": True
+            }
+            json_data = JSONRenderer().render(response)
+            return HttpResponse(json_data, content_type=content_type)

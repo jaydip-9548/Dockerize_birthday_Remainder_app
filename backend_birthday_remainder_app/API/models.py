@@ -1,5 +1,4 @@
 from django.db import models
-from API_SignIn_Up.models import userData
 import uuid
 # Create your models here.
 class remainderData(models.Model):

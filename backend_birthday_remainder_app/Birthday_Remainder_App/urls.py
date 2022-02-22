@@ -7,7 +7,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView,
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('API.urls')),
-    path('',include('API_SignIn_Up.urls')),
+    # path('',include('API_SignIn_Up.urls')),
+    # path('gettoken/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    # path('refreshtoken/', TokenRefreshView.as_view(), name='token_refresh'),
+    # path('verifytoken/', TokenVerifyView.as_view(), name='token_verify'),
     # path('',TemplateView.as_view(template_name='index.html'),name='index'),
     
 ]

@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'API',
-    'API_SignIn_Up',    
     'rest_framework_simplejwt',
 
 ]
@@ -66,27 +65,32 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Birthday_Remainder_App.wsgi.application'
 REST_FRAMEWORK = {
-
+    
+ 'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
     
 }
 
 DATABASES = {
     
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'db',
-        'PORT': 5432,
-    }
-    #     'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': 'mydb',
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'postgres',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'postgres',
+    #     'HOST': 'db',
+    #     'PORT': 5432,
     # }
+        'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'jaydip',
+    }
 
 }
 
